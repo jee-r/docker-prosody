@@ -8,6 +8,8 @@ services:
       context: .
     user: 1000:1000
     restart: unless-stopped
+    networks:
+      - prosody
     ports:
       - 5222:5222
       - 5269:5269
@@ -19,3 +21,5 @@ services:
       - ./data:/data
       - /etc/localtime:/etc/localtime:ro
     
+networks:
+  prosody:
