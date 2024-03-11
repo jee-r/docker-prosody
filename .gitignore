@@ -3,4 +3,6 @@
 /data/storage/** 
 /data/prosody.cfg.lua
 
+docker-compose.yml 
+
 /conversejs
