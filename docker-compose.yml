@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  prosody:
+    image: ghcr.io/jee-r/prosody:main
+    container_name: prosody
+    build:
+      context: .
+    user: 1000:1000
+    restart: unless-stopped
+    ports:
+      - 5222:5222
+      - 5269:5269
+      - 5280:5280
+      - 5281:5281
+    environment:
+      - TZ=Europe/Paris
+    volumes:
+      - ./data:/data
+      - /etc/localtime:/etc/localtime:ro
+    
