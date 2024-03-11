@@ -1,0 +1,26 @@
+name: Mirroring to remote repos
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+
+jobs:
+  mirroring:
+    name: Mirror
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Extract repository name
+        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+      - name: mirror to gitlab.com
+        uses: jee-r/docker-git-mirror@v1
+        with:
+          remote_repo: "gitlab.com/jee-r/${{ env.REPO_NAME }}.git"
+          remote_repo_username: ${{ secrets.GITLAB_USER }}
+          remote_repo_password: ${{ secrets.GITLAB_TOKEN }}
