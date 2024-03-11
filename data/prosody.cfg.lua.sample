@@ -221,7 +221,6 @@ c2s_interfaces = { "0.0.0.0", "::" }
 -- Settings under each VirtualHost entry apply *only* to that host.
 
 VirtualHost "localhost"
--- VirtualHost "kreatin3.tail36afd.ts.net"
 -- Prosody requires at least one enabled VirtualHost to function. You can
 -- safely remove or disable 'localhost' once you have added another.
 	authentication = "internal_hashed"
