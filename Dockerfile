@@ -1,4 +1,4 @@
-FROM alpine:3.21
+FROM alpine:3.22
 
 LABEL name="docker-prosody" \
       maintainer="Jee jee@jeer.fr" \
