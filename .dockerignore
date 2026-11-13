@@ -1,0 +1,6 @@
+.git
+.github
+data/certs
+data/plugins
+data/storage
+data/prosody.cfg.lua
