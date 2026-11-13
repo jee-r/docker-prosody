@@ -21,10 +21,14 @@ EXPOSE 	5222 \
 
 WORKDIR /data
 
+# Read by prosody and by prosodyctl, so none of them needs --config.
+# Override it to keep the configuration elsewhere.
+ENV PROSODY_CONFIG=/data/prosody.cfg.lua
+
 STOPSIGNAL SIGQUIT
 
 HEALTHCHECK --interval=30s --timeout=60s --start-period=30s \
-	CMD /usr/bin/prosodyctl --config /data/prosody.cfg.lua status
+	CMD /usr/bin/prosodyctl status
 
-ENTRYPOINT ["/usr/bin/prosody", "--no-daemonize", "--config", "/data/prosody.cfg.lua"]
+ENTRYPOINT ["/usr/bin/prosody", "--no-daemonize"]
 
