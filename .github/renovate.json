@@ -30,6 +30,12 @@
       "matchDepNames": ["prosody"],
       "matchUpdateTypes": ["minor", "major"],
       "automerge": false
+    },
+    {
+      "description": "A new Alpine release changes the build environment, so it gets a pull request",
+      "matchDepNames": ["alpine"],
+      "matchUpdateTypes": ["minor", "major"],
+      "automerge": false
     }
   ],
   "assigneesFromCodeOwners": true,
