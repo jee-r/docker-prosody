@@ -69,7 +69,7 @@ jobs:
       # Version tags (13.0.8 and 13.0) are only published from main
       - name: Compose the image tags
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
