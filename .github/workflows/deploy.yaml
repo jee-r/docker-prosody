@@ -83,7 +83,7 @@ jobs:
             type=raw,value=${{ env.PROSODY_VERSION }},enable=${{ env.GIT_BRANCH == 'main' }}
             type=raw,value=${{ env.PROSODY_MINOR }},enable=${{ env.GIT_BRANCH == 'main' }}
       - name: Build and Push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
