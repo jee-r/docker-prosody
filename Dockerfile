@@ -25,8 +25,6 @@ WORKDIR /data
 # Override it to keep the configuration elsewhere.
 ENV PROSODY_CONFIG=/data/prosody.cfg.lua
 
-STOPSIGNAL SIGQUIT
-
 HEALTHCHECK --interval=30s --timeout=60s --start-period=30s \
 	CMD /usr/bin/prosodyctl status
 
