@@ -21,16 +21,46 @@ Everything Prosody needs is in the `/data` volume:
 | `/data/storage` | Accounts, rooms and other data |
 | `/data/plugins` | Community modules, optional |
 
-Create the folders and copy [`prosody.cfg.lua.sample`](prosody.cfg.lua.sample), then edit it:
+Keeping everything under `/data` is what lets Prosody run as any non-root user: the user only needs to own the mounted folder. The image ships no configuration in `/data`, so you must provide `/data/prosody.cfg.lua` before the first start, otherwise Prosody stops with `Prosody was unable to find the configuration file`.
+
+Create the folders first:
 
 ```
 mkdir -p data/certs data/storage
-curl -fsSL -o data/prosody.cfg.lua https://raw.githubusercontent.com/jee-r/docker-prosody/main/prosody.cfg.lua.sample
 ```
 
 `data/storage` must exist before the first start, otherwise Prosody cannot create its admin socket and `prosodyctl shell` fails until the next restart.
 
-The sample is already set up for the container: paths under `/data`, pid file in `/tmp`, logs to the console (`docker logs`), and listening on all interfaces so Prosody can be reached from outside the container.
+Then start from one of these two files:
+
+1. **The sample of this repository (recommended)**, already set up for the container: paths under `/data`, pid file in `/tmp`, logs to the console (`docker logs`), and listening on all interfaces so Prosody can be reached from outside the container.
+
+   ```
+   curl -fsSL -o data/prosody.cfg.lua https://raw.githubusercontent.com/jee-r/docker-prosody/main/prosody.cfg.lua.sample
+   ```
+
+2. **The default configuration of Prosody**, shipped in the image as `/etc/prosody/prosody.cfg.lua`:
+
+   ```
+   docker run --rm --entrypoint cat ghcr.io/jee-r/prosody:13.0 /etc/prosody/prosody.cfg.lua > data/prosody.cfg.lua
+   ```
+
+   It is not set up for the container: it keeps the data in `/var/lib/prosody`, inside the container and writable only by root or the `prosody` user of the image, and writes its logs to files. Add these options to the global section, before the first `VirtualHost`, and remove its `log = { … }` block:
+
+   ```lua
+   pidfile = "/tmp/prosody.pid"
+   data_path = "/data/storage"
+   plugin_paths = { "/data/plugins" }
+   log = { info = "*console" }
+   c2s_interfaces = { "0.0.0.0", "::" }
+   http_interfaces = { "*", "::" }
+   ```
+
+## PROSODY_CONFIG
+
+The image sets `PROSODY_CONFIG=/data/prosody.cfg.lua`. Both `prosody` and `prosodyctl` read this variable to find the configuration file, so `prosodyctl` works inside the container without `--config`. The default configuration in `/etc/prosody` is never used unless you point the variable to it.
+
+To keep the configuration somewhere else, mount it and set the variable, for example `PROSODY_CONFIG=/config/prosody.cfg.lua`. Relative paths in the file, such as `certificates = "certs"`, are relative to the directory of the configuration file: use absolute paths when it is not `/data`.
 
 ## Running as root
 
@@ -42,9 +72,7 @@ run_as_root = true
 
 Running as a non-root user (`user: 1000:1000` below) does not need it, but `/data` must then belong to that user.
 
-## Configuration file and prosodyctl
-
-The configuration file is `/data/prosody.cfg.lua`. The path is set by the `PROSODY_CONFIG` environment variable, which both `prosody` and `prosodyctl` read, so `prosodyctl` works inside the container without `--config`:
+## prosodyctl
 
 ```
 docker exec prosody prosodyctl check config
@@ -52,8 +80,6 @@ docker exec prosody prosodyctl reload
 docker exec -it prosody prosodyctl adduser user@example.com
 docker exec -it prosody prosodyctl shell
 ```
-
-To keep the configuration somewhere else, mount it and set the variable, for example `PROSODY_CONFIG=/config/prosody.cfg.lua`. Paths in the file such as `certificates = "certs"` are relative to the directory of the configuration file, use absolute paths when it is not `/data`.
 
 The image does not declare any volume: mount `/data` yourself.
 
