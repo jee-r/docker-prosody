@@ -39,6 +39,8 @@
     }
   ],
   "assigneesFromCodeOwners": true,
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
   "baseBranchPatterns": [
     "main"
   ]
