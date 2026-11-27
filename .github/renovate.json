@@ -2,11 +2,34 @@
   "extends": [
     "config:base"
   ],
+  "customDatasources": {
+    "prosody": {
+      "defaultRegistryUrlTemplate": "https://prosody.im/downloads/source/",
+      "format": "html"
+    }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": ["ARG PROSODY_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "prosody",
+      "datasourceTemplate": "custom.prosody",
+      "extractVersionTemplate": "prosody-(?<version>\\d+\\.\\d+\\.\\d+)\\.tar\\.gz$",
+      "versioningTemplate": "semver"
+    }
+  ],
   "packageRules": [
     {
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true,
       "automergeType": "branch"
+    },
+    {
+      "description": "Only Prosody patch releases are merged automatically, new minor versions get a pull request",
+      "matchDepNames": ["prosody"],
+      "matchUpdateTypes": ["minor", "major"],
+      "automerge": false
     }
   ],
   "assigneesFromCodeOwners": true,
