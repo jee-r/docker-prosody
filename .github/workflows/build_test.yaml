@@ -13,7 +13,8 @@ on:
       - '**.md'
   push:
     branches:
-      - '*'
+      # '**' also matches branches with a slash, such as renovate/…
+      - '**'
       - '!main'
       - '!dev'
     paths-ignore:
