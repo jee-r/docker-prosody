@@ -77,7 +77,8 @@ RUN apk upgrade --no-cache && \
 		lua5.4-filesystem \
 		lua5.4-sec \
 		lua5.4-socket \
-		lua5.4-unbound && \
+		lua5.4-unbound \
+		tzdata && \
 	addgroup -S -g 101 prosody && \
 	adduser -S -D -H -u 100 -G prosody -g prosody \
 		-h /var/lib/prosody -s /sbin/nologin prosody
