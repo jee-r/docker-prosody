@@ -12,11 +12,25 @@ If a release is signed by another key, the build fails with `Can't check signatu
 
 ## Config
 
-copy `data/prosody.cfg.lua.sample` to `data/prosody.cfg.lua` and edit it.
+Everything Prosody needs is in the `/data` volume:
 
-The pid file should be in `/tmp` or in another directory the user running Prosody can write to, for example `pidfile = "/tmp/prosody.pid"`.
+| Path | Content |
+|---|---|
+| `/data/prosody.cfg.lua` | Configuration file |
+| `/data/certs` | Certificates |
+| `/data/storage` | Accounts, rooms and other data |
+| `/data/plugins` | Community modules, optional |
 
-we need to set interfaces to   to expose so prosody server is joinable outside of the container eg: `c2s_interfaces = { "0.0.0.0", "::" }`
+Create the folders and copy [`prosody.cfg.lua.sample`](prosody.cfg.lua.sample), then edit it:
+
+```
+mkdir -p data/certs data/storage
+curl -fsSL -o data/prosody.cfg.lua https://raw.githubusercontent.com/jee-r/docker-prosody/main/prosody.cfg.lua.sample
+```
+
+`data/storage` must exist before the first start, otherwise Prosody cannot create its admin socket and `prosodyctl shell` fails until the next restart.
+
+The sample is already set up for the container: paths under `/data`, pid file in `/tmp`, logs to the console (`docker logs`), and listening on all interfaces so Prosody can be reached from outside the container.
 
 ## Running as root
 
@@ -41,9 +55,11 @@ docker exec -it prosody prosodyctl shell
 
 To keep the configuration somewhere else, mount it and set the variable, for example `PROSODY_CONFIG=/config/prosody.cfg.lua`. Paths in the file such as `certificates = "certs"` are relative to the directory of the configuration file, use absolute paths when it is not `/data`.
 
-The image does not declare any volume: mount `/data` yourself (certificates, plugins, storage).
+The image does not declare any volume: mount `/data` yourself.
 
 ## Docker Compose
+
+Create `./data` as explained in [Config](#config), owned by the user given in `user:`.
 
 ```yaml
 services:
