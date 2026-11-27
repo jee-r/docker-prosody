@@ -1,6 +1,6 @@
 {
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "customDatasources": {
     "prosody": {
@@ -39,5 +39,7 @@
     }
   ],
   "assigneesFromCodeOwners": true,
-  "baseBranches": ["main"]
+  "baseBranchPatterns": [
+    "main"
+  ]
 }
