@@ -58,6 +58,28 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read the Prosody version
+        run: |
+          VERSION=$(sed -n 's/^ARG PROSODY_VERSION=//p' Dockerfile)
+          test -n "$VERSION"
+          echo "PROSODY_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "PROSODY_MINOR=${VERSION%.*}" >> $GITHUB_ENV
+      # Version tags (13.0.8 and 13.0) are only published from main
+      - name: Compose the image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=${{ env.SHORT_SHA }}
+            type=raw,value=${{ env.MAIN_DOCKER_TAG }}
+            type=raw,value=${{ env.GIT_BRANCH }}
+            type=raw,value=${{ env.PROSODY_VERSION }},enable=${{ env.GIT_BRANCH == 'main' }}
+            type=raw,value=${{ env.PROSODY_MINOR }},enable=${{ env.GIT_BRANCH == 'main' }}
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
@@ -65,10 +87,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: |
-            ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
-            ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ env.MAIN_DOCKER_TAG }}
-            ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ env.GIT_BRANCH }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.MAIN_DOCKER_TAG }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.GIT_BRANCH }} 
+          tags: ${{ steps.meta.outputs.tags }}
