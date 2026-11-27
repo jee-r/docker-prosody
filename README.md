@@ -8,7 +8,7 @@
 
 A docker image for [Prosody](https://prosody.im), compiled from the signed release archive on [Alpine Linux](https://alpinelinux.org).
 
-**Architecture:** `linux/amd64`
+**Multi-architecture support:** `linux/amd64`, `linux/arm64`, `linux/arm/v7`
 
 **Available tags:**
 - `latest`, `main` - Latest build of the `main` branch
